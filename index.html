@@ -1,0 +1,3523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Future Scanner // Unknown Signal</title>
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #02030a;
+    color: #e9fbff;
+    font-family: "Courier New", monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Moving cyber grid */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    background:
+        linear-gradient(rgba(0,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,255,0.035) 1px, transparent 1px);
+
+    background-size: 45px 45px;
+
+    animation: gridMove 12s linear infinite;
+
+    pointer-events: none;
+    z-index: -5;
+}
+
+@keyframes gridMove {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(45px);
+    }
+}
+
+
+/* =========================================================
+   SCANLINE
+========================================================= */
+
+.scanline {
+    position: fixed;
+    top: -10%;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background: rgba(0,255,255,0.4);
+
+    box-shadow: 0 0 18px #00eaff;
+
+    animation: scanline 5s linear infinite;
+
+    pointer-events: none;
+
+    z-index: 1000;
+}
+
+@keyframes scanline {
+
+    from {
+        top: -5%;
+    }
+
+    to {
+        top: 105%;
+    }
+
+}
+
+.scanline-up {
+    top: 105%;
+    background: rgba(255,53,231,0.38);
+    box-shadow: 0 0 18px #ff35e7;
+    animation: scanlineUp 6.5s linear infinite;
+}
+
+@keyframes scanlineUp {
+    from { top: 105%; }
+    to { top: -5%; }
+}
+
+.scanline-down {
+    animation-duration: 5s;
+}
+
+
+/* =========================================================
+   BINARY BACKGROUND
+========================================================= */
+
+.binary {
+    position: fixed;
+    inset: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    opacity: 0.28;
+
+    z-index: -3;
+}
+
+.binary span {
+    position: absolute;
+
+    color: #00eaff;
+
+    font-size: 15px;
+
+    writing-mode: vertical-rl;
+    text-shadow: 0 0 8px rgba(0,234,255,.45);
+
+    animation: binaryFall linear infinite;
+}
+
+@keyframes binaryFall {
+
+    from {
+        transform: translateY(-120vh);
+    }
+
+    to {
+        transform: translateY(120vh);
+    }
+
+}
+
+
+/* =========================================================
+   MAIN APP
+========================================================= */
+
+.app {
+
+    width: min(950px, 92%);
+
+    margin: auto;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 40px 0;
+}
+
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen {
+    display: none;
+
+    width: 100%;
+
+    text-align: center;
+}
+
+.screen.active {
+
+    display: block;
+
+    animation: screenIn 0.65s ease;
+}
+
+@keyframes screenIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    border: 1px solid rgba(0,255,255,0.35);
+
+    padding: 8px 15px;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    color: #9efcff;
+
+    margin-bottom: 25px;
+}
+
+.status-dot {
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #00ff9d;
+
+    box-shadow: 0 0 14px #00ff9d;
+
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+    50% {
+        opacity: 0.25;
+    }
+
+}
+
+
+/* =========================================================
+   UFO
+========================================================= */
+
+.ufo {
+
+    width: 300px;
+    height: 130px;
+
+    margin: 10px auto 30px;
+
+    position: relative;
+
+    animation: floatUfo 3s ease-in-out infinite;
+}
+
+.ufo-body {
+
+    position: absolute;
+
+    left: 10%;
+    right: 10%;
+
+    bottom: 15px;
+
+    height: 65px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #394452,
+            #080b12
+        );
+
+    border: 2px solid #00eaff;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 18px #00eaff,
+        inset 0 0 25px rgba(0,255,255,0.25);
+}
+
+.ufo-dome {
+
+    position: absolute;
+
+    width: 110px;
+    height: 55px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    top: 12px;
+
+    border-radius: 70px 70px 20px 20px;
+
+    background: rgba(0,255,255,0.12);
+
+    border: 2px solid #8c7cff;
+
+    box-shadow: 0 0 22px #8c7cff;
+}
+
+.ufo-light {
+
+    position: absolute;
+
+    width: 14px;
+    height: 14px;
+
+    bottom: 32px;
+
+    border-radius: 50%;
+
+    background: #ff35e7;
+
+    box-shadow: 0 0 18px #ff35e7;
+
+    animation: ufoBlink 1s infinite alternate;
+}
+
+.ufo-light:nth-child(1) {
+    left: 22%;
+}
+
+.ufo-light:nth-child(2) {
+    left: 32%;
+    animation-delay: .2s;
+}
+
+.ufo-light:nth-child(3) {
+    left: 43%;
+    animation-delay: .4s;
+}
+
+.ufo-light:nth-child(4) {
+    left: 54%;
+    animation-delay: .6s;
+}
+
+.ufo-light:nth-child(5) {
+    left: 65%;
+    animation-delay: .8s;
+}
+
+@keyframes ufoBlink {
+
+    from {
+        opacity: .25;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes floatUfo {
+
+    0%,100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+
+}
+
+
+/* =========================================================
+   TITLES
+========================================================= */
+
+.title {
+
+    font-family: Arial, sans-serif;
+
+    font-size: clamp(38px, 7vw, 75px);
+
+    letter-spacing: 5px;
+
+    color: white;
+
+    text-shadow:
+        0 0 8px #00eaff,
+        0 0 25px #00eaff;
+
+    margin-bottom: 12px;
+}
+
+.subtitle {
+
+    color: #ff4de1;
+
+    letter-spacing: 4px;
+
+    font-size: 13px;
+
+    margin-bottom: 30px;
+}
+
+.glitch {
+
+    animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+
+    0%,92%,100% {
+        transform: translate(0);
+    }
+
+    94% {
+        transform: translate(-2px,1px);
+    }
+
+    96% {
+        transform: translate(2px,-1px);
+    }
+
+}
+
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.panel {
+
+    max-width: 760px;
+
+    margin: auto;
+
+    padding: 35px;
+
+    border: 1px solid rgba(0,238,255,0.35);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,255,255,0.04),
+            rgba(255,0,220,0.03)
+        );
+
+    box-shadow:
+        0 0 35px rgba(0,238,255,0.07);
+
+    position: relative;
+}
+
+.panel::before {
+
+    content: "SYSTEM_INTERFACE";
+
+    position: absolute;
+
+    top: -10px;
+    left: 20px;
+
+    padding: 2px 8px;
+
+    background: #02030a;
+
+    color: #00eaff;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+input {
+
+    width: 100%;
+
+    padding: 16px;
+
+    margin: 18px 0 25px;
+
+    background: #05070d;
+
+    border: 1px solid #00eaff;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 18px;
+
+    outline: none;
+
+    text-align: center;
+
+    box-shadow: 0 0 15px rgba(0,238,255,0.15);
+}
+
+input:focus {
+
+    box-shadow: 0 0 25px rgba(0,238,255,0.35);
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+button {
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    border: 1px solid #00eaff;
+
+    background: transparent;
+
+    color: #bfffff;
+
+    padding: 14px 24px;
+
+    letter-spacing: 2px;
+
+    transition: .25s;
+
+    margin: 8px 5px;
+}
+
+button:hover {
+
+    background: #00eaff;
+
+    color: #02040a;
+
+    box-shadow: 0 0 25px #00eaff;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   SIGNAL OPTIONS
+========================================================= */
+
+.signal-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2,1fr);
+
+    gap: 12px;
+
+    margin: 25px 0;
+}
+
+.signal {
+
+    padding: 20px 12px;
+
+    border: 1px solid rgba(0,238,255,0.3);
+
+    cursor: pointer;
+
+    transition: .25s;
+
+    background: rgba(0,0,0,.25);
+}
+
+.signal:hover {
+
+    border-color: #ff3ce7;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 0 20px rgba(255,60,231,.2);
+}
+
+.signal.selected {
+
+    border-color: #ff3ce7;
+
+    background: rgba(255,60,231,.12);
+
+    box-shadow:
+        0 0 20px rgba(255,60,231,.3),
+        inset 0 0 15px rgba(255,60,231,.05);
+}
+
+.signal-icon {
+
+    font-size: 28px;
+
+    display: block;
+
+    margin-bottom: 8px;
+}
+
+.signal-name {
+
+    color: white;
+
+    font-weight: bold;
+}
+
+.signal-desc {
+
+    color: #8bafb5;
+
+    font-size: 11px;
+
+    margin-top: 6px;
+}
+
+
+/* =========================================================
+   RADAR
+========================================================= */
+
+.radar {
+
+    width: 230px;
+    height: 230px;
+
+    margin: 20px auto;
+
+    border: 1px solid #00eaff;
+
+    border-radius: 50%;
+
+    position: relative;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,255,255,.12),
+            transparent 65%
+        );
+
+    box-shadow:
+        0 0 25px rgba(0,255,255,.15);
+}
+
+.radar::before,
+.radar::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 12%;
+
+    border: 1px solid rgba(0,255,255,.25);
+
+    border-radius: 50%;
+}
+
+.radar::after {
+
+    inset: 28%;
+}
+
+.radar-line {
+
+    position: absolute;
+
+    width: 50%;
+
+    height: 2px;
+
+    background: #00ffcc;
+
+    top: 50%;
+    left: 50%;
+
+    transform-origin: left center;
+
+    animation: radarSpin 2s linear infinite;
+
+    box-shadow: 0 0 12px #00ffcc;
+}
+
+.radar-center {
+
+    position: absolute;
+
+    width: 10px;
+    height: 10px;
+
+    background: #ff35e7;
+
+    border-radius: 50%;
+
+    top: calc(50% - 5px);
+
+    left: calc(50% - 5px);
+
+    box-shadow: 0 0 20px #ff35e7;
+}
+
+@keyframes radarSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   TERMINAL
+========================================================= */
+
+.terminal {
+
+    text-align: left;
+
+    background: #020305;
+
+    border: 1px solid rgba(0,255,180,.4);
+
+    padding: 22px;
+
+    min-height: 280px;
+
+    font-size: 13px;
+
+    color: #53ffbd;
+
+    box-shadow:
+        inset 0 0 30px rgba(0,255,180,.03);
+}
+
+.terminal-line {
+
+    margin-bottom: 10px;
+
+    opacity: 0;
+
+    animation: terminalAppear .2s forwards;
+}
+
+@keyframes terminalAppear {
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+.progress {
+
+    margin-top: 22px;
+
+    height: 15px;
+
+    border: 1px solid #00eaff;
+
+    padding: 2px;
+}
+
+.progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00eaff,
+            #ff35e7
+        );
+
+    box-shadow: 0 0 15px #00eaff;
+
+    transition: width .2s;
+}
+
+
+/* =========================================================
+   RESULT CARD
+========================================================= */
+
+.result-card {
+
+    text-align: left;
+
+    border: 1px solid #ff35e7;
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,0,200,.06),
+            rgba(0,255,255,.04)
+        );
+
+    box-shadow:
+        0 0 35px rgba(255,0,220,.12);
+}
+
+.result-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    border-bottom: 1px solid rgba(255,255,255,.15);
+
+    padding-bottom: 20px;
+
+    margin-bottom: 20px;
+}
+
+.result-name {
+
+    font-size: 25px;
+
+    color: white;
+}
+
+.result-year {
+
+    color: #00eaff;
+
+    font-size: 20px;
+}
+
+.result-item {
+
+    margin: 18px 0;
+}
+
+.result-label {
+
+    color: #ff35e7;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 5px;
+}
+
+.result-value {
+
+    color: #dffcff;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+}
+
+.stability {
+
+    margin-top: 25px;
+
+    padding: 12px;
+
+    border: 1px solid rgba(0,255,180,.25);
+
+    color: #53ffbd;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   CAMERA SCREEN
+========================================================= */
+
+.camera-panel {
+
+    max-width: 850px;
+
+    margin: auto;
+
+    padding: 25px;
+
+    border: 1px solid rgba(0,238,255,.4);
+
+    background: rgba(0,0,0,.35);
+}
+
+.camera-title {
+
+    color: #00eaff;
+
+    font-size: 13px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 15px;
+}
+
+.camera-container {
+
+    position: relative;
+
+    width: min(720px,100%);
+
+    margin: auto;
+
+    overflow: hidden;
+
+    border: 2px solid #00eaff;
+
+    background: #000;
+
+    box-shadow:
+        0 0 30px rgba(0,238,255,.2);
+}
+
+#video {
+
+    display: block;
+
+    width: 100%;
+
+    height: auto;
+
+    transform: scaleX(-1);
+
+    background: #000;
+}
+
+#filterCanvas {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    pointer-events: none;
+}
+
+
+/* Camera corner brackets */
+
+.camera-container::before,
+.camera-container::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 55px;
+
+    height: 55px;
+
+    z-index: 5;
+
+    pointer-events: none;
+}
+
+.camera-container::before {
+
+    top: 15px;
+    left: 15px;
+
+    border-top: 2px solid #00ffcc;
+    border-left: 2px solid #00ffcc;
+}
+
+.camera-container::after {
+
+    bottom: 15px;
+    right: 15px;
+
+    border-bottom: 2px solid #ff35e7;
+    border-right: 2px solid #ff35e7;
+}
+
+
+/* Camera HUD */
+
+.hud-top {
+
+    position: absolute;
+
+    top: 20px;
+    left: 25px;
+    right: 25px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    z-index: 10;
+
+    pointer-events: none;
+
+    font-size: 11px;
+
+    color: #8fffff;
+
+    text-shadow: 0 0 8px #00eaff;
+}
+
+.hud-bottom {
+
+    position: absolute;
+
+    bottom: 20px;
+    left: 25px;
+    right: 25px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    z-index: 10;
+
+    pointer-events: none;
+
+    font-size: 11px;
+
+    color: #ff7be9;
+
+    text-shadow: 0 0 8px #ff35e7;
+}
+
+.camera-status {
+
+    margin-top: 15px;
+
+    color: #53ffbd;
+
+    font-size: 12px;
+
+    min-height: 18px;
+}
+
+
+/* =========================================================
+   CAPTURE FLASH
+========================================================= */
+
+.flash {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: white;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    z-index: 2000;
+}
+
+.flash.active {
+
+    animation: flashEffect .45s ease;
+}
+
+@keyframes flashEffect {
+
+    0% {
+        opacity: 0;
+    }
+
+    25% {
+        opacity: .9;
+    }
+
+    100% {
+        opacity: 0;
+    }
+
+}
+
+
+/* =========================================================
+   FUTURE ID
+========================================================= */
+
+.id-card {
+
+    width: min(760px,100%);
+
+    margin: auto;
+
+    padding: 25px;
+
+    border: 1px solid #00eaff;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,255,255,.08),
+            rgba(255,0,200,.07)
+        );
+
+    box-shadow:
+        0 0 35px rgba(0,238,255,.15);
+}
+
+.id-inner {
+
+    border: 1px solid rgba(255,255,255,.2);
+
+    padding: 20px;
+
+    text-align: left;
+}
+
+.id-heading {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding-bottom: 15px;
+
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid rgba(255,255,255,.2);
+}
+
+.id-title {
+
+    color: #00eaff;
+
+    font-size: 20px;
+
+    letter-spacing: 3px;
+}
+
+.id-classified {
+
+    color: #ff35e7;
+
+    font-size: 10px;
+}
+
+.id-content {
+
+    display: grid;
+
+    grid-template-columns: 220px 1fr;
+
+    gap: 25px;
+}
+
+#capturedImage {
+
+    width: 100%;
+
+    display: block;
+
+    border: 1px solid #00eaff;
+
+    box-shadow: 0 0 20px rgba(0,238,255,.2);
+}
+
+.id-details {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 13px;
+}
+
+.id-detail-label {
+
+    color: #ff35e7;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+}
+
+.id-detail-value {
+
+    color: #dffcff;
+
+    font-size: 14px;
+
+    margin-top: 3px;
+}
+
+.id-footer {
+
+    margin-top: 20px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid rgba(255,255,255,.15);
+
+    color: #53ffbd;
+
+    font-size: 10px;
+
+    word-break: break-all;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:650px) {
+
+    .panel {
+        padding: 25px 18px;
+    }
+
+    .signal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .result-header {
+        flex-direction: column;
+    }
+
+    .id-content {
+        grid-template-columns: 1fr;
+    }
+
+    .id-card {
+        padding: 15px;
+    }
+
+    .ufo {
+        transform: scale(.8);
+        margin-bottom: 5px;
+    }
+
+}
+
+</style>
+
+<style id="polished-future-scanner">
+/* POLISHED FUTURE SCANNER PASS */
+.camera-frame {
+    position: relative;
+    overflow: hidden;
+}
+.camera-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    background:
+        radial-gradient(circle at 50% 42%, transparent 0 22%, rgba(0,234,255,.045) 23%, transparent 43%),
+        linear-gradient(90deg, transparent 0 8%, rgba(0,234,255,.08) 8.1%, transparent 8.4% 91.6%, rgba(255,53,231,.08) 91.7%, transparent 92%);
+    mix-blend-mode: screen;
+}
+.camera-frame::after {
+    content: "FACIAL MATRIX // ACTIVE";
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    z-index: 7;
+    font: 700 10px/1 "Courier New", monospace;
+    letter-spacing: 1.5px;
+    color: rgba(0,234,255,.9);
+    text-shadow: 0 0 8px rgba(0,234,255,.7);
+    pointer-events: none;
+}
+#filterCanvas {
+    filter: drop-shadow(0 0 3px rgba(0,234,255,.22));
+}
+@media (max-width: 600px) {
+    .camera-frame::after {
+        font-size: 8px;
+        left: 8px;
+        bottom: 7px;
+    }
+}
+</style>
+
+
+<style id="future-id-download-style">
+#futureIdRenderCanvas{display:none!important;}
+</style>
+</head>
+
+
+<body>
+
+<div class="scanline scanline-down"></div>
+<div class="scanline scanline-up"></div>
+
+<div class="binary" id="binary"></div>
+
+<div class="flash" id="flash"></div>
+
+
+<div class="app">
+
+
+<!-- =====================================================
+     SCREEN 1 — UFO / SIGNAL
+===================================================== -->
+
+<section class="screen active" id="intro">
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        UNKNOWN SIGNAL DETECTED
+
+    </div>
+
+
+    <div class="ufo">
+
+        <div class="ufo-dome"></div>
+
+        <div class="ufo-body"></div>
+
+        <div class="ufo-light"></div>
+        <div class="ufo-light"></div>
+        <div class="ufo-light"></div>
+        <div class="ufo-light"></div>
+        <div class="ufo-light"></div>
+
+    </div>
+
+
+    <h1 class="title glitch">
+        FUTURE SCANNER
+    </h1>
+
+    <div class="subtitle">
+        // UNKNOWN TRANSMISSION //
+    </div>
+
+
+    <div class="panel">
+
+        <p style="color:#9bb5bb;line-height:1.7;">
+
+            Something has entered our signal network.
+
+            <br><br>
+
+            The source is unknown.
+            The timeline is unstable.
+
+            <br><br>
+
+            But it appears to know something
+            about your future.
+
+        </p>
+
+
+        <button onclick="goToName()">
+            CONNECT TO SIGNAL
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SCREEN 2 — NAME
+===================================================== -->
+
+<section class="screen" id="nameScreen">
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        CONNECTION ESTABLISHED
+
+    </div>
+
+
+    <h1 class="title" style="font-size:42px;">
+        IDENTIFY YOURSELF
+    </h1>
+
+    <div class="subtitle">
+        // FUTURE DATABASE ACCESS //
+    </div>
+
+
+    <div class="panel">
+
+        <p style="color:#7fa5ac;">
+
+            The scanner needs one piece of information.
+
+        </p>
+
+
+        <input
+            id="nameInput"
+            type="text"
+            maxlength="20"
+            placeholder="ENTER YOUR NAME..."
+        >
+
+
+        <button onclick="saveName()">
+            CONTINUE →
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SCREEN 3 — SIGNAL
+===================================================== -->
+
+<section class="screen" id="signalScreen">
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        PERSONAL SIGNAL REQUIRED
+
+    </div>
+
+
+    <h1 class="title" style="font-size:40px;">
+        CHOOSE YOUR SIGNAL
+    </h1>
+
+    <div class="subtitle">
+        // WHAT DRIVES YOU? //
+    </div>
+
+
+    <div class="panel">
+
+        <p style="color:#8daeb4;">
+
+            The future isn't determined by one answer.
+
+            <br>
+
+            But the scanner needs a starting point.
+
+        </p>
+
+
+        <div class="signal-grid">
+
+
+            <div
+                class="signal"
+                onclick="selectSignal(this,'curious')">
+
+                <span class="signal-icon">
+                    🧠
+                </span>
+
+                <div class="signal-name">
+                    CURIOUS
+                </div>
+
+                <div class="signal-desc">
+                    I want to know everything.
+                </div>
+
+            </div>
+
+
+            <div
+                class="signal"
+                onclick="selectSignal(this,'bold')">
+
+                <span class="signal-icon">
+                    ⚡
+                </span>
+
+                <div class="signal-name">
+                    BOLD
+                </div>
+
+                <div class="signal-desc">
+                    I'll try something crazy.
+                </div>
+
+            </div>
+
+
+            <div
+                class="signal"
+                onclick="selectSignal(this,'creative')">
+
+                <span class="signal-icon">
+                    🎨
+                </span>
+
+                <div class="signal-name">
+                    CREATIVE
+                </div>
+
+                <div class="signal-desc">
+                    I make things differently.
+                </div>
+
+            </div>
+
+
+            <div
+                class="signal"
+                onclick="selectSignal(this,'adventurous')">
+
+                <span class="signal-icon">
+                    🌌
+                </span>
+
+                <div class="signal-name">
+                    ADVENTUROUS
+                </div>
+
+                <div class="signal-desc">
+                    I want to see what's out there.
+                </div>
+
+            </div>
+
+
+            <div
+                class="signal"
+                onclick="selectSignal(this,'solver')">
+
+                <span class="signal-icon">
+                    💡
+                </span>
+
+                <div class="signal-name">
+                    PROBLEM SOLVER
+                </div>
+
+                <div class="signal-desc">
+                    Give me a challenge.
+                </div>
+
+            </div>
+
+
+            <div
+                class="signal"
+                onclick="selectSignal(this,'chaotic')">
+
+                <span class="signal-icon">
+                    🌀
+                </span>
+
+                <div class="signal-name">
+                    CHAOTIC
+                </div>
+
+                <div class="signal-desc">
+                    Let's see what happens.
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <button onclick="startScan()">
+            INITIATE FUTURE SCAN
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SCREEN 4 — SCAN
+===================================================== -->
+
+<section class="screen" id="scanScreen">
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        SCANNING TIMELINE
+
+    </div>
+
+
+    <h1 class="title" style="font-size:42px;">
+        ANALYZING...
+    </h1>
+
+
+    <div class="radar">
+
+        <div class="radar-line"></div>
+
+        <div class="radar-center"></div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div
+            class="terminal"
+            id="terminal">
+        </div>
+
+
+        <div class="progress">
+
+            <div
+                class="progress-bar"
+                id="progressBar">
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SCREEN 5 — RESULT
+===================================================== -->
+
+<section class="screen" id="resultScreen">
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        TIMELINE FOUND
+
+    </div>
+
+
+    <h1 class="title" style="font-size:40px;">
+        FUTURE DECODED
+    </h1>
+
+
+    <div class="subtitle">
+        // HANDLE WITH CURIOSITY //
+    </div>
+
+
+    <div class="result-card">
+
+
+        <div class="result-header">
+
+            <div>
+
+                <div
+                    style="font-size:10px;color:#ff35e7;letter-spacing:2px;">
+
+                    FUTURE IDENTITY
+
+                </div>
+
+
+                <div
+                    class="result-name"
+                    id="resultName">
+                </div>
+
+            </div>
+
+
+            <div
+                class="result-year"
+                id="resultYear">
+            </div>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <div class="result-label">
+                FUTURE ROLE
+            </div>
+
+            <div
+                class="result-value"
+                id="futureRole">
+            </div>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <div class="result-label">
+                UNEXPECTED DISCOVERY
+            </div>
+
+            <div
+                class="result-value"
+                id="discovery">
+            </div>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <div class="result-label">
+                FUTURE COMPANION
+            </div>
+
+            <div
+                class="result-value"
+                id="companion">
+            </div>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <div class="result-label">
+                SECRET ABILITY
+            </div>
+
+            <div
+                class="result-value"
+                id="ability">
+            </div>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <div class="result-label">
+                PLOT TWIST
+            </div>
+
+            <div
+                class="result-value"
+                id="twist">
+            </div>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <div class="result-label">
+                DESTINATION DETECTED
+            </div>
+
+            <div
+                class="result-value"
+                id="destination">
+            </div>
+
+        </div>
+
+
+        <div class="stability">
+
+            TIMELINE STABILITY:
+
+            <strong id="stability"></strong>
+
+            <br>
+
+            <span style="color:#607b80;">
+                (probably accurate. probably.)
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <button onclick="openCamera()">
+        📡 ACTIVATE FUTURE CAMERA
+    </button>
+
+
+    <button onclick="restartScanner()">
+        ↻ SCAN SOMEONE ELSE
+    </button>
+
+</section>
+
+
+<!-- =====================================================
+     SCREEN 6 — CAMERA
+===================================================== -->
+
+<section class="screen" id="cameraScreen">
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        FACIAL TIMELINE SCAN
+
+    </div>
+
+
+    <h1 class="title" style="font-size:40px;">
+        FUTURE CAMERA
+    </h1>
+
+
+    <div class="subtitle">
+        // IDENTITY VISUALIZATION //
+    </div>
+
+
+    <div class="camera-panel">
+
+
+        <div class="camera-title">
+
+            SUBJECT:
+            <span id="cameraSubject">
+                UNKNOWN
+            </span>
+
+            //
+
+            TIMELINE:
+            <span id="cameraYear">
+                ----
+            </span>
+
+        </div>
+
+
+        <div class="camera-container">
+
+            <video
+                id="video"
+                autoplay
+                playsinline>
+            </video>
+
+
+            <canvas
+                id="filterCanvas">
+            </canvas>
+
+
+            <div class="hud-top">
+
+                <span>
+                    ● LIVE
+                </span>
+
+                <span>
+                    FACIAL SCAN
+                </span>
+
+                <span>
+                    2050+
+                </span>
+
+            </div>
+
+
+            <div class="hud-bottom">
+
+                <span>
+                    SIGNAL: ACTIVE
+                </span>
+
+                <span id="cameraRole">
+                    FUTURE IDENTITY
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="camera-status"
+            id="cameraStatus">
+
+            CAMERA INITIALIZING...
+
+        </div>
+
+
+        <button onclick="capturePhoto()">
+            ◉ CAPTURE FUTURE MEMORY
+        </button>
+
+
+        <button onclick="stopCameraAndReturn()">
+            ← RETURN
+        </button>
+
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SCREEN 7 — FUTURE ID
+===================================================== -->
+
+<section class="screen" id="idScreen">
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        FUTURE MEMORY CAPTURED
+
+    </div>
+
+
+    <h1 class="title" style="font-size:40px;">
+        FUTURE ID
+    </h1>
+
+
+    <div class="subtitle">
+        // TIMELINE RECORD CREATED //
+    </div>
+
+
+    <div class="id-card">
+
+        <div class="id-inner">
+
+
+            <div class="id-heading">
+
+                <div class="id-title">
+                    FUTURE IDENTITY
+                </div>
+
+                <div class="id-classified">
+                    CLASSIFICATION: 2050+
+                </div>
+
+            </div>
+
+
+            <div class="id-content">
+
+
+                <div>
+
+                    <img
+                        id="capturedImage"
+                        alt="Future Identity">
+
+                </div>
+
+
+                <div class="id-details">
+
+
+                    <div>
+
+                        <div class="id-detail-label">
+                            SUBJECT
+                        </div>
+
+                        <div
+                            class="id-detail-value"
+                            id="idName">
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="id-detail-label">
+                            FUTURE YEAR
+                        </div>
+
+                        <div
+                            class="id-detail-value"
+                            id="idYear">
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="id-detail-label">
+                            FUTURE ROLE
+                        </div>
+
+                        <div
+                            class="id-detail-value"
+                            id="idRole">
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="id-detail-label">
+                            SIGNAL
+                        </div>
+
+                        <div
+                            class="id-detail-value"
+                            id="idSignal">
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="id-detail-label">
+                            TIMELINE STATUS
+                        </div>
+
+                        <div class="id-detail-value">
+                            ACTIVE
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="id-footer">
+
+                SIGNAL HASH:
+
+                <span id="hash">
+                </span>
+
+                <br><br>
+
+                01000110 01010101 01010100
+                01010101 01010010 01000101
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <button onclick="downloadID()">
+        ↓ SAVE FUTURE ID CARD
+    </button>
+
+
+    <button onclick="shareFutureID()">
+        ↗ SHARE FUTURE ID
+    </button>
+
+
+    <button onclick="restartScanner()">
+        ↻ SCAN SOMEONE ELSE
+    </button>
+
+
+    <p
+        style="
+        color:#667e83;
+        margin-top:20px;
+        font-size:11px;
+        ">
+
+        Take your Future ID to the
+        <strong>FUTURE MEMORY BOOTH</strong>
+        for your physical memory.
+
+    </p>
+
+</section>
+
+
+</div>
+
+
+<script>
+
+let faceLandmarker = null;
+let lastVideoTime = -1;
+let faceReady = false;
+
+async function initFaceLandmarker(){
+    try {
+        const { FaceLandmarker, FilesetResolver } = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm");
+        const vision = await FilesetResolver.forVisionTasks(
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm"
+        );
+        faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
+            baseOptions: {
+                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+                delegate: "GPU"
+            },
+            runningMode: "VIDEO",
+            numFaces: 1,
+            minFaceDetectionConfidence: 0.5,
+            minFacePresenceConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+        faceReady = true;
+    } catch (e) {
+        console.warn("Face tracking unavailable; using futuristic fallback overlay.", e);
+        faceReady = false;
+    }
+}
+
+initFaceLandmarker();
+
+/* =========================================================
+   BINARY BACKGROUND
+========================================================= */
+
+const binaryContainer =
+    document.getElementById("binary");
+
+
+for(let i = 0; i < 45; i++){
+
+    const span =
+        document.createElement("span");
+
+    let text = "";
+
+    for(let j = 0; j < 20; j++){
+
+        text += Math.random() > 0.5
+            ? "1"
+            : "0";
+
+    }
+
+    span.textContent = text;
+
+    span.style.left =
+        Math.random() * 100 + "%";
+
+    span.style.animationDuration =
+        (5 + Math.random() * 10) + "s";
+
+    span.style.animationDelay =
+        (-Math.random() * 10) + "s";
+
+    binaryContainer.appendChild(span);
+
+}
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let userName = "";
+
+let selectedSignal = "";
+
+let futureResult = null;
+
+let cameraStream = null;
+
+
+/* =========================================================
+   SCREEN CONTROL
+========================================================= */
+
+function showScreen(id){
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen => {
+
+            screen.classList.remove("active");
+
+        });
+
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+function goToName(){
+
+    showScreen("nameScreen");
+
+
+    setTimeout(() => {
+
+        document
+            .getElementById("nameInput")
+            .focus();
+
+    },400);
+
+}
+
+
+/* =========================================================
+   SAVE NAME
+========================================================= */
+
+function saveName(){
+
+    const input =
+        document.getElementById("nameInput");
+
+
+    userName =
+        input.value.trim();
+
+
+    if(userName === ""){
+
+        input.style.borderColor =
+            "#ff35e7";
+
+        input.placeholder =
+            "NAME REQUIRED...";
+
+        return;
+
+    }
+
+
+    input.style.borderColor =
+        "#00eaff";
+
+
+    showScreen("signalScreen");
+
+}
+
+
+/* =========================================================
+   SIGNAL
+========================================================= */
+
+function selectSignal(element, signal){
+
+    document
+        .querySelectorAll(".signal")
+        .forEach(item => {
+
+            item.classList.remove("selected");
+
+        });
+
+
+    element.classList.add("selected");
+
+
+    selectedSignal = signal;
+
+}
+
+
+/* =========================================================
+   FUTURE DATA
+========================================================= */
+
+const futures = {
+
+    curious: {
+
+        roles: [
+            "Professional Problem Solver",
+            "Future Research Explorer",
+            "Chief Question Asker",
+            "Digital Detective",
+            "Human Curiosity Specialist"
+        ],
+
+        discoveries: [
+            "You discover a shortcut that saves people 11 hours every week.",
+            "You accidentally create something that becomes wildly popular.",
+            "You find a solution everyone else had overlooked.",
+            "You ask one question that changes an entire project.",
+            "You discover that your random idea was actually brilliant."
+        ],
+
+        companions: [
+            "A sarcastic AI that knows too much.",
+            "A tiny robot that follows you everywhere.",
+            "An extremely judgmental digital assistant.",
+            "A mysterious drone with questionable navigation skills."
+        ],
+
+        abilities: [
+            "You can understand complicated things suspiciously fast.",
+            "You can find the one missing detail everyone ignored.",
+            "You somehow always know where the problem is.",
+            "You can turn 'why?' into an actual invention."
+        ]
+
+    },
+
+
+    bold: {
+
+        roles: [
+            "Future Risk Taker",
+            "Innovation Commander",
+            "Prototype Destroyer & Creator",
+            "Chief Experiment Officer",
+            "Professional 'Let's Try It' Person"
+        ],
+
+        discoveries: [
+            "You build something nobody expected you to build.",
+            "Your failed experiment becomes your biggest success.",
+            "You accidentally start a trend.",
+            "You press a button marked DO NOT PRESS. Something amazing happens.",
+            "Your most ridiculous idea becomes your most useful invention."
+        ],
+
+        companions: [
+            "A robot that has absolutely no fear.",
+            "An AI that keeps saying 'DO IT'.",
+            "A drone named Kevin.",
+            "A futuristic machine that refuses to explain itself."
+        ],
+
+        abilities: [
+            "You can turn panic into productivity.",
+            "You can make decisions before everyone else finishes discussing them.",
+            "You are strangely good at making impossible things happen.",
+            "You can convince people to try the weird idea."
+        ]
+
+    },
+
+
+    creative: {
+
+        roles: [
+            "Future Experience Designer",
+            "Digital World Builder",
+            "Reality Remix Specialist",
+            "Creative Systems Architect",
+            "Chief Imagination Officer"
+        ],
+
+        discoveries: [
+            "You design something people thought was impossible.",
+            "Your weirdest sketch becomes your most famous creation.",
+            "You create a space people don't want to leave.",
+            "You turn an ordinary object into something futuristic.",
+            "Someone pays you to build the thing you made for fun."
+        ],
+
+        companions: [
+            "A holographic assistant with a dramatic personality.",
+            "A tiny AI artist.",
+            "A robot that thinks it is an interior designer.",
+            "A hologram that keeps stealing your ideas."
+        ],
+
+        abilities: [
+            "You can see possibilities where everyone else sees blank space.",
+            "You can make boring things look futuristic.",
+            "Your brain generates ideas faster than your notes app can handle.",
+            "You can turn chaos into something strangely beautiful."
+        ]
+
+    },
+
+
+    adventurous: {
+
+        roles: [
+            "Future Explorer",
+            "Off-World Experience Designer",
+            "Digital Expedition Leader",
+            "Unknown Territory Specialist",
+            "Interplanetary Tourist"
+        ],
+
+        discoveries: [
+            "You visit a place that isn't on today's maps.",
+            "You become one of the first people to experience a new world.",
+            "Your holiday accidentally turns into an expedition.",
+            "You discover a signal nobody can explain.",
+            "You travel somewhere that currently exists only in science fiction."
+        ],
+
+        companions: [
+            "A navigation AI with terrible jokes.",
+            "A floating robot guide.",
+            "A drone that thinks it is your pet.",
+            "A mysterious machine that knows the way."
+        ],
+
+        abilities: [
+            "You never panic when the map stops working.",
+            "You can navigate places that technically don't exist.",
+            "You are strangely comfortable with the unknown.",
+            "You can turn getting lost into an adventure."
+        ]
+
+    },
+
+
+    solver: {
+
+        roles: [
+            "Future Systems Fixer",
+            "Chaos Engineer",
+            "Digital Troubleshooter",
+            "Problem-Solving Specialist",
+            "Emergency Technology Wizard"
+        ],
+
+        discoveries: [
+            "You fix a system everyone else had given up on.",
+            "You solve a problem that had existed for 20 years.",
+            "Someone calls you because everything stopped working.",
+            "You find the bug in under five minutes.",
+            "Your emergency solution becomes the official solution."
+        ],
+
+        companions: [
+            "A diagnostic robot that never sleeps.",
+            "An AI that only speaks in error codes.",
+            "A suspiciously helpful toolbox.",
+            "A repair drone that follows you around."
+        ],
+
+        abilities: [
+            "You can find the problem by staring at it.",
+            "You can remain calm when every screen says ERROR.",
+            "You somehow understand broken machines.",
+            "You can turn 'it's impossible' into 'give me five minutes'."
+        ]
+
+    },
+
+
+    chaotic: {
+
+        roles: [
+            "Professional Wildcard",
+            "Future Chaos Coordinator",
+            "Unexpected Innovation Specialist",
+            "Chief Plot Twist Officer",
+            "Certified Agent of Randomness"
+        ],
+
+        discoveries: [
+            "You accidentally invent something while trying to fix something else.",
+            "You press the wrong button and somehow improve the system.",
+            "You become famous for something you did as a joke.",
+            "Your backup plan becomes the actual plan.",
+            "Nobody understands how you got there. Including you."
+        ],
+
+        companions: [
+            "An AI that has also stopped following instructions.",
+            "A robot with commitment issues.",
+            "A mysterious floating cube.",
+            "A drone that may or may not be legally yours."
+        ],
+
+        abilities: [
+            "You somehow survive situations you definitely caused.",
+            "You can turn complete chaos into a story worth telling.",
+            "Your accidental ideas are suspiciously good.",
+            "You have an unexplained talent for pressing the correct wrong button."
+        ]
+
+    }
+
+};
+
+
+/* =========================================================
+   RANDOM ITEM
+========================================================= */
+
+function randomItem(array){
+
+    return array[
+        Math.floor(Math.random() * array.length)
+    ];
+
+}
+
+
+/* =========================================================
+   START SCAN
+========================================================= */
+
+function startScan(){
+
+    if(selectedSignal === ""){
+
+        alert(
+            "SELECT A FUTURE SIGNAL FIRST."
+        );
+
+        return;
+
+    }
+
+
+    showScreen("scanScreen");
+
+
+    const terminal =
+        document.getElementById("terminal");
+
+
+    const progress =
+        document.getElementById("progressBar");
+
+
+    terminal.innerHTML = "";
+
+    progress.style.width = "0%";
+
+
+    const lines = [
+
+        "> INITIALIZING FUTURE ENGINE...",
+
+        "> IDENTIFICATION: " +
+            userName.toUpperCase(),
+
+        "> SIGNAL TYPE: " +
+            selectedSignal.toUpperCase(),
+
+        "> CONNECTING TO UNKNOWN TRANSMISSION...",
+
+        "> SIGNAL SOURCE: UNKNOWN",
+
+        "> DECRYPTING 01000110 01010101 01010100 01010101 01010010 01000101...",
+
+        "> SEARCHING POSSIBILITY MATRIX...",
+
+        "> CROSS-REFERENCING HUMAN TIMELINES...",
+
+        "> ACCESSING FUTURE DATABASE...",
+
+        "> WARNING: MULTIPLE POSSIBLE FUTURES DETECTED.",
+
+        "> SELECTING MOST INTERESTING TIMELINE...",
+
+        "> TIMELINE LOCKED.",
+
+        "> FUTURE SIGNAL ACQUIRED.",
+
+        "> GENERATING IDENTITY..."
+
+    ];
+
+
+    let index = 0;
+
+    let progressValue = 0;
+
+
+    function nextLine(){
+
+        if(index >= lines.length){
+
+            setTimeout(showResult,800);
+
+            return;
+
+        }
+
+
+        const line =
+            document.createElement("div");
+
+
+        line.className =
+            "terminal-line";
+
+
+        line.textContent =
+            lines[index];
+
+
+        terminal.appendChild(line);
+
+
+        index++;
+
+
+        progressValue =
+            Math.min(
+                100,
+                progressValue +
+                100 / lines.length
+            );
+
+
+        progress.style.width =
+            progressValue + "%";
+
+
+        setTimeout(
+            nextLine,
+            450 + Math.random() * 400
+        );
+
+    }
+
+
+    nextLine();
+
+}
+
+
+/* =========================================================
+   SHOW RESULT
+========================================================= */
+
+function showResult(){
+
+    const data =
+        futures[selectedSignal];
+
+
+    const yearOptions = [
+        2042,
+        2045,
+        2047,
+        2050,
+        2053,
+        2057,
+        2060
+    ];
+
+
+    const year =
+        randomItem(yearOptions);
+
+
+    const stability =
+        72 +
+        Math.floor(Math.random() * 27);
+
+
+    futureResult = {
+
+        year: year,
+
+        role: randomItem(data.roles),
+
+        discovery:
+            randomItem(data.discoveries),
+
+        companion:
+            randomItem(data.companions),
+
+        ability:
+            randomItem(data.abilities),
+
+        twist:
+            randomItem([
+
+                "You promised you would never do this. You are now doing it professionally.",
+
+                "Your future self left you a message. It simply says: 'You'll understand later.'",
+
+                "The thing you thought was a side project becomes the main story.",
+
+                "Someone from your past appears in your future timeline.",
+
+                "You become surprisingly good at something you currently don't care about.",
+
+                "Your future career wasn't planned. It just... happened.",
+
+                "You finally understand why you kept saving those random ideas.",
+
+                "The scanner refuses to explain this part."
+
+            ]),
+
+        destination:
+            randomItem([
+
+                "A city that doesn't exist yet.",
+
+                "The top floor of a building above the clouds.",
+
+                "A laboratory hidden beneath a futuristic city.",
+
+                "Somewhere beyond the current map.",
+
+                "A place where the sky is permanently neon.",
+
+                "A tiny café on the edge of a very advanced city.",
+
+                "A place you definitely didn't tell the scanner about."
+
+            ]),
+
+        stability: stability
+
+    };
+
+
+    document.getElementById("resultName")
+        .textContent =
+        userName.toUpperCase() + "_07";
+
+
+    document.getElementById("resultYear")
+        .textContent =
+        "YEAR " + futureResult.year;
+
+
+    document.getElementById("futureRole")
+        .textContent =
+        futureResult.role;
+
+
+    document.getElementById("discovery")
+        .textContent =
+        futureResult.discovery;
+
+
+    document.getElementById("companion")
+        .textContent =
+        futureResult.companion;
+
+
+    document.getElementById("ability")
+        .textContent =
+        futureResult.ability;
+
+
+    document.getElementById("twist")
+        .textContent =
+        futureResult.twist;
+
+
+    document.getElementById("destination")
+        .textContent =
+        futureResult.destination;
+
+
+    document.getElementById("stability")
+        .textContent =
+        futureResult.stability + "%";
+
+
+    showScreen("resultScreen");
+
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+async function openCamera(){
+
+    showScreen("cameraScreen");
+
+
+    document.getElementById("cameraSubject")
+        .textContent =
+        userName.toUpperCase();
+
+
+    document.getElementById("cameraYear")
+        .textContent =
+        futureResult
+            ? futureResult.year
+            : "----";
+
+
+    document.getElementById("cameraRole")
+        .textContent =
+        futureResult
+            ? futureResult.role.toUpperCase()
+            : "FUTURE IDENTITY";
+
+
+    const status =
+        document.getElementById("cameraStatus");
+
+
+    status.textContent =
+        "REQUESTING CAMERA ACCESS...";
+
+
+    try {
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+
+                    facingMode: "user",
+
+                    width: {
+                        ideal: 1280
+                    },
+
+                    height: {
+                        ideal: 720
+                    }
+
+                },
+
+                audio: false
+
+            });
+
+
+        const video =
+            document.getElementById("video");
+
+
+        video.srcObject =
+            cameraStream;
+
+
+        await video.play();
+
+
+        status.textContent =
+            "● LIVE // FUTURE FILTER INITIALIZING...";
+
+
+        startFilterAnimation();
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+
+        status.textContent =
+            "CAMERA ACCESS FAILED.";
+
+
+        alert(
+
+            "The Future Scanner couldn't access the webcam.\n\n" +
+
+            "Please check that:\n" +
+
+            "• Camera permission is allowed\n" +
+
+            "• The laptop has a webcam\n" +
+
+            "• The page is running through localhost or HTTPS"
+
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   FUTURE FILTER
+========================================================= */
+
+let filterAnimationId;
+
+
+function startFilterAnimation(){
+
+    const canvas = document.getElementById("filterCanvas");
+    const video = document.getElementById("video");
+    const ctx = canvas.getContext("2d");
+
+    function drawFallback(w,h){
+        const boxW=w*.42, boxH=h*.62, x=(w-boxW)/2, y=(h-boxH)/2;
+        ctx.strokeStyle="rgba(0,255,255,.75)"; ctx.lineWidth=3;
+        const c=35;
+        [[x,y+c,x,y,x+c,y],[x+boxW-c,y,x+boxW,y,x+boxW,y+c],
+         [x,y+boxH-c,x,y+boxH,x+c,y+boxH],[x+boxW-c,y+boxH,x+boxW,y+boxH,x+boxW,y+boxH-c]]
+         .forEach(p=>{ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(p[2],p[3]);ctx.lineTo(p[4],p[5]);ctx.stroke();});
+        const t=Date.now()/1000, scanY=y+((Math.sin(t*2)+1)/2)*boxH;
+        const g=ctx.createLinearGradient(x,scanY,x+boxW,scanY); g.addColorStop(0,"transparent");g.addColorStop(.5,"rgba(0,255,255,.9)");g.addColorStop(1,"transparent");
+        ctx.strokeStyle=g;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,scanY);ctx.lineTo(x+boxW,scanY);ctx.stroke();
+        ctx.font="bold 14px monospace";ctx.fillStyle="#00ffcc";ctx.fillText("NEURAL SIGNAL: 94%",x+20,y+boxH+28);
+        ctx.fillStyle="#ff35e7";ctx.fillText("TIMELINE "+(futureResult?futureResult.year:"2057"),x+boxW-125,y+boxH+28);
+    }
+
+    function point(lm,w,h){ return {x:(1-lm.x)*w,y:lm.y*h}; }
+
+    function drawFilter(landmarks,w,h){
+        const pts=landmarks.map(l=>point(l,w,h));
+        const L=pts[33], R=pts[263], nose=pts[1], forehead=pts[10], chin=pts[152];
+        const eyeW=Math.hypot(R.x-L.x,R.y-L.y);
+        const faceW=Math.hypot(pts[234].x-pts[454].x,pts[234].y-pts[454].y);
+        const scale=Math.max(eyeW*1.95,faceW*.78);
+        const cx=(L.x+R.x)/2, cy=(L.y+R.y)/2;
+        const faceTop=forehead.y-scale*.12;
+        const signal=selectedSignal || "adventurous";
+        const now=Date.now();
+
+        ctx.save();
+        ctx.globalCompositeOperation="source-over";
+        ctx.lineJoin="round";
+        ctx.lineCap="round";
+
+        const glow=(color,blur=22)=>{ctx.shadowColor=color;ctx.shadowBlur=blur;};
+        const stroke=(color,width)=>{ctx.strokeStyle=color;ctx.lineWidth=width;glow(color);};
+        const label=(txt,y,color="#00eaff")=>{
+            ctx.font=`bold ${Math.max(11,scale*.075)}px monospace`;
+            ctx.textAlign="center";
+            ctx.fillStyle=color;
+            glow(color,14);
+            ctx.fillText(txt,cx,y);
+        };
+        const dot=(x,y,r,color)=>{
+            ctx.fillStyle=color;glow(color,12);
+            ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+        };
+
+        if(signal==="curious"){
+            // AI glasses — clear, recognizable and close to the face.
+            stroke("#00eaff",Math.max(5,scale*.038));
+            ctx.fillStyle="rgba(0,234,255,.28)";
+            ctx.beginPath();ctx.roundRect(L.x-scale*.32,L.y-scale*.16,scale*.53,scale*.30,scale*.08);ctx.fill();ctx.stroke();
+            ctx.beginPath();ctx.roundRect(R.x-scale*.21,R.y-scale*.16,scale*.53,scale*.30,scale*.08);ctx.fill();ctx.stroke();
+            ctx.strokeStyle="#ff35e7";ctx.lineWidth=Math.max(3,scale*.018);glow("#ff35e7",15);
+            ctx.beginPath();ctx.moveTo(L.x+scale*.21,L.y);ctx.lineTo(R.x-scale*.21,R.y);ctx.stroke();
+            dot(L.x,L.y,Math.max(3,scale*.035),"#fff");dot(R.x,R.y,Math.max(3,scale*.035),"#fff");
+            label("AI // ONLINE",faceTop-scale*.28,"#00eaff");
+
+        } else if(signal==="bold"){
+            // Robotic visor — keep the strongest existing design.
+            ctx.fillStyle="rgba(18,5,30,.84)";stroke("#ff35e7",Math.max(7,scale*.045));
+            ctx.beginPath();
+            ctx.moveTo(cx-scale*.62,cy-scale*.17);ctx.lineTo(cx+scale*.62,cy-scale*.17);
+            ctx.lineTo(cx+scale*.50,cy+scale*.18);ctx.quadraticCurveTo(cx,cy+scale*.25,cx-scale*.50,cy+scale*.18);
+            ctx.closePath();ctx.fill();ctx.stroke();
+            stroke("#00eaff",Math.max(3,scale*.02));
+            ctx.beginPath();ctx.moveTo(cx-scale*.49,cy+scale*.02);ctx.lineTo(cx+scale*.49,cy+scale*.02);ctx.stroke();
+            for(let i=-2;i<=2;i++) dot(cx+i*scale*.15,cy-scale*.015,Math.max(2,scale*.025),i===0?"#fff":"#00eaff");
+            label("ROBOTIC VISION",faceTop-scale*.28,"#ff35e7");
+
+        } else if(signal==="adventurous"){
+            // SPACE EXPLORER: one clean helmet rim + a real visor. No double curves.
+            stroke("#00eaff",Math.max(7,scale*.045));
+            ctx.beginPath();ctx.arc(cx,cy+scale*.04,scale*.70,Math.PI*1.12,Math.PI*1.88);ctx.stroke();
+            // Helmet side connectors.
+            ctx.beginPath();ctx.moveTo(cx-scale*.69,cy+scale*.05);ctx.lineTo(cx-scale*.57,cy+scale*.29);ctx.lineTo(cx-scale*.42,cy+scale*.32);ctx.stroke();
+            ctx.beginPath();ctx.moveTo(cx+scale*.69,cy+scale*.05);ctx.lineTo(cx+scale*.57,cy+scale*.29);ctx.lineTo(cx+scale*.42,cy+scale*.32);ctx.stroke();
+            // Single visor panel.
+            ctx.fillStyle="rgba(0,234,255,.15)";stroke("#ffffff",Math.max(3,scale*.018));
+            ctx.beginPath();ctx.roundRect(cx-scale*.48,cy-scale*.08,scale*.96,scale*.29,scale*.08);ctx.fill();ctx.stroke();
+            // Small orbiting star.
+            const a=now*.0012, sx=cx+Math.cos(a)*scale*.82, sy=faceTop-scale*.05+Math.sin(a)*scale*.32;
+            dot(sx,sy,Math.max(3,scale*.025),"#ff35e7");
+            label("SPACE EXPLORER",faceTop-scale*.34,"#00eaff");
+
+        } else if(signal==="creative"){
+            // CREATIVE: holographic prism glasses + floating diamond/spark particles.
+            stroke("#b58cff",Math.max(5,scale*.034));
+            ctx.fillStyle="rgba(181,140,255,.20)";
+            ctx.beginPath();ctx.roundRect(L.x-scale*.30,L.y-scale*.14,scale*.52,scale*.28,scale*.08);ctx.fill();ctx.stroke();
+            ctx.beginPath();ctx.roundRect(R.x-scale*.22,R.y-scale*.14,scale*.52,scale*.28,scale*.08);ctx.fill();ctx.stroke();
+            stroke("#ff35e7",Math.max(3,scale*.018));
+            ctx.beginPath();ctx.moveTo(L.x+scale*.21,L.y);ctx.lineTo(R.x-scale*.21,R.y);ctx.stroke();
+            // Prism diamonds around the temples/head, not bars on the face.
+            const colors=["#00eaff","#ff35e7","#b58cff"];
+            for(let i=0;i<5;i++){
+                const side=i%2?-1:1, yy=faceTop+scale*(.02+i*.17), xx=cx+side*scale*(.58+(i%2)*.12);
+                const s=scale*(.035+(i%3)*.008);
+                ctx.strokeStyle=colors[i%3];ctx.lineWidth=Math.max(2,scale*.012);glow(colors[i%3],13);
+                ctx.beginPath();ctx.moveTo(xx,yy-s);ctx.lineTo(xx+s,yy);ctx.lineTo(xx,yy+s);ctx.lineTo(xx-s,yy);ctx.closePath();ctx.stroke();
+            }
+            label("HOLOGRAPHIC // CREATE",faceTop-scale*.30,"#b58cff");
+
+        } else if(signal==="solver"){
+            // SOLVER: detective/scanner monocle + target reticle. Visually reads as analysis.
+            const eye=R; // camera-mirrored coordinate system: right landmark is visually left/right handled by geometry below.
+            stroke("#00ff9d",Math.max(5,scale*.032));
+            ctx.beginPath();ctx.arc(R.x,R.y,scale*.17,0,Math.PI*2);ctx.stroke();
+            ctx.strokeStyle="#ffffff";ctx.lineWidth=Math.max(2,scale*.012);glow("#00ff9d",12);
+            ctx.beginPath();
+            ctx.moveTo(R.x-scale*.24,R.y);ctx.lineTo(R.x-scale*.10,R.y);
+            ctx.moveTo(R.x+scale*.10,R.y);ctx.lineTo(R.x+scale*.24,R.y);
+            ctx.moveTo(R.x,R.y-scale*.24);ctx.lineTo(R.x,R.y-scale*.10);
+            ctx.moveTo(R.x,R.y+scale*.10);ctx.lineTo(R.x,R.y+scale*.24);
+            ctx.stroke();
+            // Thin analysis line from monocle toward the opposite temple.
+            stroke("#00ff9d",Math.max(3,scale*.014));
+            ctx.beginPath();ctx.moveTo(R.x+scale*.15,R.y-scale*.16);ctx.lineTo(cx+scale*.53,faceTop-scale*.08);ctx.lineTo(cx+scale*.68,faceTop-scale*.08);ctx.stroke();
+            label("SCAN // SOLVED",faceTop-scale*.30,"#00ff9d");
+
+        } else if(signal==="chaotic"){
+            // CHAOTIC: controlled glitch shards around the face, not five horizontal bars.
+            // One small central glitch mark + scattered RGB fragments.
+            const shards=[
+                [-.60,-.12,.18,.035,"#00eaff"],[-.52,.12,.12,.045,"#ff35e7"],
+                [-.35,.29,.16,.032,"#b58cff"],[.42,-.16,.15,.04,"#ff35e7"],
+                [.56,.08,.12,.035,"#00eaff"],[.38,.28,.18,.03,"#00eaff"],
+                [-.72,.25,.09,.03,"#ff35e7"],[.70,-.02,.10,.03,"#b58cff"]
+            ];
+            shards.forEach(([sx,sy,sw,sh,color],i)=>{
+                ctx.fillStyle=color;glow(color,10);ctx.globalAlpha=.9;
+                ctx.save();ctx.translate(cx+scale*sx,cy+scale*sy);ctx.rotate((i%3-1)*.16);
+                ctx.fillRect(-scale*sw/2,-scale*sh/2,scale*sw,Math.max(3,scale*sh));ctx.restore();
+            });
+            ctx.globalAlpha=1;
+            stroke("#ffffff",Math.max(3,scale*.016));
+            ctx.beginPath();ctx.moveTo(cx-scale*.10,cy-scale*.04);ctx.lineTo(cx-scale*.02,cy+scale*.04);ctx.lineTo(cx+scale*.08,cy-scale*.03);ctx.stroke();
+            label("SIGNAL // UNSTABLE",faceTop-scale*.30,"#ff35e7");
+        }
+        ctx.restore();
+    }
+
+    function draw(){
+        if(video.videoWidth===0 || video.videoHeight===0){ filterAnimationId=requestAnimationFrame(draw); return; }
+        canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        const w=canvas.width,h=canvas.height;
+
+        if(faceReady && faceLandmarker){
+            try{
+                if(video.currentTime!==lastVideoTime){
+                    lastVideoTime=video.currentTime;
+                    const result=faceLandmarker.detectForVideo(video,performance.now());
+                    if(result.faceLandmarks?.length){ drawFilter(result.faceLandmarks[0],w,h); }
+                    else drawFallback(w,h);
+                }
+            }catch(e){ drawFallback(w,h); }
+        } else drawFallback(w,h);
+
+        if(faceReady) document.getElementById("cameraStatus").textContent="● LIVE // FACE-TRACKED FUTURE FILTER ACTIVE";
+        filterAnimationId=requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+/* =========================================================
+   CAPTURE PHOTO
+========================================================= */
+
+function capturePhoto(){
+
+    const video =
+        document.getElementById("video");
+
+
+    const canvas =
+        document.createElement("canvas");
+
+
+    canvas.width =
+        video.videoWidth;
+
+
+    canvas.height =
+        video.videoHeight;
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    /*
+     * Mirror webcam image
+     */
+
+    ctx.save();
+
+    ctx.translate(
+        canvas.width,
+        0
+    );
+
+    ctx.scale(-1,1);
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.restore();
+
+
+    /*
+     * Draw the same futuristic HUD
+     */
+
+    const overlay =
+        document.getElementById("filterCanvas");
+
+
+    ctx.drawImage(
+        overlay,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /*
+     * Flash effect
+     */
+
+    const flash =
+        document.getElementById("flash");
+
+
+    flash.classList.remove("active");
+
+
+    void flash.offsetWidth;
+
+
+    flash.classList.add("active");
+
+
+    /*
+     * Store image
+     */
+
+    const imageData =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    document.getElementById(
+        "capturedImage"
+    ).src =
+        imageData;
+
+
+    /*
+     * Fill ID card
+     */
+
+    document.getElementById("idName")
+        .textContent =
+        userName.toUpperCase();
+
+
+    document.getElementById("idYear")
+        .textContent =
+        futureResult.year;
+
+
+    document.getElementById("idRole")
+        .textContent =
+        futureResult.role;
+
+
+    document.getElementById("idSignal")
+        .textContent =
+        selectedSignal.toUpperCase();
+
+
+    document.getElementById("hash")
+        .textContent =
+        generateHash();
+
+
+    stopCamera();
+
+
+    setTimeout(() => {
+
+        showScreen("idScreen");
+
+    },500);
+
+}
+
+
+/* =========================================================
+   HASH
+========================================================= */
+
+function generateHash(){
+
+    const chars =
+        "ABCDEF0123456789";
+
+    let result = "";
+
+    for(let i=0;i<24;i++){
+
+        result +=
+            chars[
+                Math.floor(
+                    Math.random() *
+                    chars.length
+                )
+            ];
+
+    }
+
+    return result;
+
+}
+
+
+/* =========================================================
+   STOP CAMERA
+========================================================= */
+
+function stopCamera(){
+
+    if(cameraStream){
+
+        cameraStream
+            .getTracks()
+            .forEach(track => {
+                track.stop();
+            });
+
+        cameraStream = null;
+
+    }
+
+
+    if(filterAnimationId){
+
+        cancelAnimationFrame(
+            filterAnimationId
+        );
+
+        filterAnimationId = null;
+
+    }
+
+    lastVideoTime = -1;
+
+
+    const video =
+        document.getElementById("video");
+
+
+    video.srcObject = null;
+
+}
+
+
+/* =========================================================
+   RETURN FROM CAMERA
+========================================================= */
+
+function stopCameraAndReturn(){
+
+    stopCamera();
+
+    showScreen("resultScreen");
+
+}
+
+
+/* =========================================================
+   DOWNLOAD FUTURE ID
+========================================================= */
+
+function renderFutureIDCard(){
+    const W=1400, H=900;
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    const x=c.getContext("2d");
+    const cyan="#00eaff", pink="#ff35e7", white="#e9fbff", muted="#8ba6ad";
+
+    // Deep futuristic card background.
+    const bg=x.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,"#030713"); bg.addColorStop(.55,"#080b18"); bg.addColorStop(1,"#10031a");
+    x.fillStyle=bg; x.fillRect(0,0,W,H);
+
+    // Cyber grid.
+    x.globalAlpha=.16; x.strokeStyle=cyan; x.lineWidth=1;
+    for(let gx=0;gx<W;gx+=50){x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke();}
+    for(let gy=0;gy<H;gy+=50){x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();}
+    x.globalAlpha=1;
+
+    // Binary streams.
+    x.font="16px monospace"; x.fillStyle=cyan; x.globalAlpha=.20;
+    for(let i=0;i<18;i++){
+        const bx=35+i*78;
+        for(let j=0;j<8;j++) x.fillText(j%2?"10100101":"01011010",bx,55+j*105);
+    }
+    x.globalAlpha=1;
+
+    // Outer and inner card borders.
+    x.strokeStyle=cyan; x.lineWidth=2; x.shadowColor=cyan; x.shadowBlur=18;
+    x.strokeRect(28,28,W-56,H-56);
+    x.shadowBlur=0; x.strokeStyle="rgba(255,255,255,.18)"; x.lineWidth=1; x.strokeRect(68,68,W-136,H-136);
+
+    x.fillStyle=pink; x.font="bold 16px monospace"; x.textAlign="right";
+    x.fillText("CLASSIFICATION: 2050+",W-95,112);
+
+    x.textAlign="left"; x.fillStyle=cyan; x.font="bold 30px monospace";
+    x.fillText("FUTURE IDENTITY",95,135);
+    x.strokeStyle="rgba(255,255,255,.18)"; x.beginPath();x.moveTo(95,166);x.lineTo(W-95,166);x.stroke();
+
+    // Photo panel.
+    const photo=document.getElementById("capturedImage");
+    const px=95, py=205, pw=430, ph=315;
+    x.save(); x.beginPath();x.rect(px,py,pw,ph);x.clip();
+    if(photo && photo.complete && photo.naturalWidth){
+        const scale=Math.max(pw/photo.naturalWidth,ph/photo.naturalHeight);
+        const dw=photo.naturalWidth*scale, dh=photo.naturalHeight*scale;
+        x.drawImage(photo,px+(pw-dw)/2,py+(ph-dh)/2,dw,dh);
+    } else { x.fillStyle="#05070d";x.fillRect(px,py,pw,ph); }
+    x.restore();
+    x.strokeStyle=cyan;x.lineWidth=2;x.shadowColor=cyan;x.shadowBlur=15;x.strokeRect(px,py,pw,ph);x.shadowBlur=0;
+
+    const label=(txt,y)=>{x.fillStyle=pink;x.font="bold 14px monospace";x.fillText(txt,600,y);};
+    const value=(txt,y)=>{x.fillStyle=white;x.font="20px monospace";x.fillText(String(txt||""),600,y);};
+    label("SUBJECT",220); value((userName||"UNKNOWN").toUpperCase(),247);
+    label("FUTURE YEAR",300); value(futureResult?.year||"----",327);
+    label("FUTURE ROLE",380); value(futureResult?.role||"FUTURE IDENTITY",407);
+    label("SIGNAL",460); value((selectedSignal||"UNKNOWN").toUpperCase(),487);
+    label("TIMELINE STATUS",540); value("ACTIVE",567);
+
+    x.strokeStyle="rgba(255,255,255,.18)";x.beginPath();x.moveTo(95,600);x.lineTo(W-95,600);x.stroke();
+    x.fillStyle=muted;x.font="14px monospace";x.fillText("SIGNAL HASH:",95,635);
+    x.fillStyle=cyan;x.font="bold 14px monospace";x.fillText(document.getElementById("hash")?.textContent||"UNKNOWN",205,635);
+    x.fillStyle=cyan;x.font="14px monospace";x.fillText("01000110 01010101 01010010 01010101 01010010 01000101",95,672);
+
+    // Small scan bar + footer branding.
+    const grad=x.createLinearGradient(95,0,W-95,0);grad.addColorStop(0,cyan);grad.addColorStop(.5,pink);grad.addColorStop(1,cyan);
+    x.fillStyle=grad;x.fillRect(95,720,W-190,3);
+    x.fillStyle="#667e83";x.font="12px monospace";x.fillText("FUTURE SCANNER // UNKNOWN SIGNAL",95,755);
+    x.fillStyle=pink;x.textAlign="right";x.fillText("TIMELINE RECORD CREATED",W-95,755);
+    x.textAlign="left";
+
+    return c;
+}
+
+async function getFutureIDBlob(){
+    const card=renderFutureIDCard();
+    return await new Promise(resolve=>card.toBlob(resolve,"image/png",1));
+}
+
+async function downloadID(){
+    if(!document.getElementById("capturedImage").src){
+        alert("No Future ID has been captured yet."); return;
+    }
+    const blob=await getFutureIDBlob();
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");
+    link.href=url;
+    link.download="Future_ID_Card_"+(userName||"Visitor").replace(/\s+/g,"_")+".png";
+    document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+async function shareFutureID(){
+    if(!document.getElementById("capturedImage").src){
+        alert("No Future ID has been captured yet."); return;
+    }
+    try{
+        const blob=await getFutureIDBlob();
+        const file=new File([blob],"Future_ID_Card_"+(userName||"Visitor").replace(/\s+/g,"_")+".png",{type:"image/png"});
+        if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+            await navigator.share({title:"My Future ID",text:"My Future Scanner identity 🚀",files:[file]});
+        } else {
+            const url=URL.createObjectURL(blob);
+            const link=document.createElement("a");link.href=url;link.download=file.name;
+            document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        }
+    }catch(e){
+        if(e.name!=="AbortError") await downloadID();
+    }
+}
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+function restartScanner(){
+
+    stopCamera();
+
+
+    userName = "";
+
+    selectedSignal = "";
+
+    futureResult = null;
+
+
+    document.getElementById(
+        "nameInput"
+    ).value = "";
+
+
+    document
+        .querySelectorAll(".signal")
+        .forEach(item => {
+
+            item.classList.remove(
+                "selected"
+            );
+
+        });
+
+
+    showScreen("intro");
+
+}
+
+
+/* =========================================================
+   ENTER KEY
+========================================================= */
+
+document
+    .getElementById("nameInput")
+    .addEventListener(
+        "keydown",
+        function(event){
+
+            if(event.key === "Enter"){
+
+                saveName();
+
+            }
+
+        }
+    );
+
+
+/* =========================================================
+   CLEANUP
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        stopCamera();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
